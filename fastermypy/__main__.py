@@ -1,4 +1,5 @@
 """FasterMypy: Speed up mypy by caching type-checking results per Git branch."""
+
 import os
 from pathlib import Path
 import subprocess
