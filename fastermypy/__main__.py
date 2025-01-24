@@ -98,7 +98,7 @@ def run_mypy():
         args.append(f"--config-file={config_file}")
     args.extend(mypy_args)
 
-    print(f"Running mypy")
+    print(f"Running Mypy")
     start = time.time()
 
     # Run mypy via its API
@@ -112,8 +112,8 @@ def run_mypy():
         print(stderr, file=sys.stderr)
     
     if pre_command:
-        print(f"Pre-command took {pre_command_duration} seconds")
-    print(f"mypy took {end-start} seconds")
+        print(f"Pre-command took {pre_command_duration:3g} seconds")
+    print(f"Mypy took {end-start:3g} seconds")
     sys.exit(exit_status)
 
 if __name__ == "__main__":
