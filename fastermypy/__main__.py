@@ -2,16 +2,20 @@ import os
 import subprocess
 import toml
 from pathlib import Path
+import sys
 
 def load_config():
     """Load fastermypy settings from pyproject.toml."""
     current_dir = Path.cwd()
     while current_dir != current_dir.parent:
         config_file = current_dir / "pyproject.toml"
+        print(config_file)
         if config_file.exists():
             config_data = toml.load(config_file)
             return config_data.get("tool", {}).get("fastermypy", {})
         current_dir = current_dir.parent
+        if (current_dir/".git").exists():
+            break
     return {}
 
 def find_mypy_config():
@@ -46,26 +50,48 @@ def get_git_branch():
     except subprocess.CalledProcessError:
         return "default_branch"
 
+def get_repo_root():
+    """Get the root directory of the Git repository."""
+    try:
+        result = subprocess.run(
+            ['git', 'rev-parse', '--show-toplevel'],
+            text=True, capture_output=True, check=True
+        )
+        return Path(result.stdout.strip()).absolute()
+    except subprocess.CalledProcessError:
+        return Path.cwd().root
 def run_mypy():
     """Run mypy with branch-specific caching and optional pre-command."""
     config = load_config()
     
     branch_name = get_git_branch()
+    repo_root = get_repo_root()
     cache_dir = config.get("cache_dir", f".mypy_cache_{branch_name}")
+    assert isinstance(cache_dir, str)
+    cache_dir = cache_dir.format(branch_name=branch_name, repo_root=repo_root)
     os.makedirs(cache_dir, exist_ok=True)
 
     pre_command = config.get("pre_command")
     if pre_command:
         print(f"Running pre-command: {pre_command}")
-        subprocess.run(pre_command, shell=True, check=True)
-
+        # runn command and stop if failed
+        out= subprocess.check_call(pre_command, shell=True)
+        if out != 0:
+            raise Exception("Pre-command failed")  
     config_file = find_mypy_config()
     config_option = f"--config-file={config_file}" if config_file else ""
+
+    #Path(cache_dir).mkdir(exist_ok=True)
 
     command = ["mypy", f"--cache-dir={cache_dir}"]
     if config_option:
         command.append(config_option)
-    command.append(".")
+
+    # Forward all provided command-line arguments to mypy
+    mypy_args = sys.argv[1:]  # Get all command-line arguments after `fastermypy`
+
+    command.extend(mypy_args)
+
 
     print(f"Running mypy with cache: {cache_dir}")
     if config_file:

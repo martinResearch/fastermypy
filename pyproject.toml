@@ -13,5 +13,5 @@ dependencies = ["mypy", "toml"]
 fastermypy = "fastermypy.__main__:run_mypy"
 
 [tool.fastermypy]
-cache_dir = ".mypy_cache_{branch}"  # Cache directory pattern with branch
+cache_dir = "{repo_root}/.mypy_cache_{branch_name}"  # Cache directory pattern with branch
 pre_command = "uv pip sync requirements.txt"  # Command to run before mypy
