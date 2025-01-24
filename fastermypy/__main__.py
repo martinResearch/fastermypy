@@ -105,9 +105,11 @@ def run_mypy() -> None:
     if config_file:
         print(f"Using mypy configuration file: {mypy_config_file}")
         args.append(f"--config-file={mypy_config_file}")
+
+    args.append("--sqlite-cache") # defaulting this to true as it makes Mypy faster
     args.extend(mypy_args)
 
-    print("Running Mypy...")
+    print("Running Mypy with arguments:\n"," ".join(args))
     start = time.time()
 
     # Run mypy via its API
