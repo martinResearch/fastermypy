@@ -9,6 +9,9 @@ description = "Enhanced mypy runner with branch-specific caching and pre-executi
 authors = [{ name = "Your Name", email = "your.email@example.com" }]
 dependencies = ["mypy", "toml"]
 
+[project.scripts]
+trimesh = "fastermypy:fastermypy.main:run_mypy"
+
 [tool.fastermypy]
 cache_dir = ".mypy_cache_{branch}"  # Cache directory pattern with branch
 pre_command = "uv pip sync requirements.txt"  # Command to run before mypy
