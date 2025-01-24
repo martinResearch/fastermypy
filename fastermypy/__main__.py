@@ -68,7 +68,7 @@ def run_mypy():
     
     branch_name = get_git_branch()
     repo_root = get_repo_root()
-    cache_dir = config.get("cache_dir", f".mypy_cache_{branch_name}")
+    cache_dir = config.get("cache_dir", "{repo_root}/.mypy_cache/branch/{branch_name}")
     assert isinstance(cache_dir, str)
     cache_dir = cache_dir.format(branch_name=branch_name, repo_root=repo_root)
     os.makedirs(cache_dir, exist_ok=True)
