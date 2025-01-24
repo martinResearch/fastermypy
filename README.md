@@ -10,7 +10,7 @@ FasterMypy is a custom wrapper for mypy that provides:
 Install directly from GitHub:
 
 ```bash
-pip install git+https://github.com/marintResearch/fastermypy.git
+pip install git+https://github.com/martinResearch/fastermypy.git
 ```
 
 Replace `yourusername` with your actual GitHub username.
