@@ -6,24 +6,28 @@ import sys
 from mypy import api
 import time
 
+
 def load_config():
     """Load fastermypy settings from pyproject.toml."""
     current_dir = Path.cwd()
     while current_dir != current_dir.parent:
-        config_file = current_dir / "pyproject.toml"        
+        config_file = current_dir / "pyproject.toml"
         if config_file.exists():
             return config_file
         current_dir = current_dir.parent
-        if (current_dir/".git").exists():
+        if (current_dir / ".git").exists():
             break
     return {}
+
 
 def find_mypy_config():
     """Search for a mypy.ini file up to the Git root directory."""
     try:
         git_root = subprocess.run(
             ["git", "rev-parse", "--show-toplevel"],
-            text=True, capture_output=True, check=True
+            text=True,
+            capture_output=True,
+            check=True,
         ).stdout.strip()
         git_root_path = Path(git_root)
     except subprocess.CalledProcessError:
@@ -39,27 +43,35 @@ def find_mypy_config():
     config_path = git_root_path / "mypy.ini"
     return config_path if config_path.exists() else None
 
+
 def get_git_branch():
     """Get the current Git branch name."""
     try:
         result = subprocess.run(
-            ['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
-            text=True, capture_output=True, check=True
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+            text=True,
+            capture_output=True,
+            check=True,
         )
         return result.stdout.strip()
     except subprocess.CalledProcessError:
         return "default_branch"
 
+
 def get_repo_root():
     """Get the root directory of the Git repository."""
     try:
         result = subprocess.run(
-            ['git', 'rev-parse', '--show-toplevel'],
-            text=True, capture_output=True, check=True
+            ["git", "rev-parse", "--show-toplevel"],
+            text=True,
+            capture_output=True,
+            check=True,
         )
         return Path(result.stdout.strip()).absolute()
     except subprocess.CalledProcessError:
         return Path.cwd().root
+
+
 def run_mypy():
     """Run mypy with branch-specific caching and optional pre-command."""
     config_file = load_config()
@@ -79,14 +91,13 @@ def run_mypy():
         start = time.time()
         print(f"Running pre-command: {pre_command}")
         # runn command and stop if failed
-        out= subprocess.check_call(pre_command, shell=True)
+        out = subprocess.check_call(pre_command, shell=True)
         if out != 0:
-            raise Exception("Pre-command failed")  
+            raise Exception("Pre-command failed")
         pre_command_duration = time.time() - start
     config_file = find_mypy_config()
 
-    #Path(cache_dir).mkdir(exist_ok=True)
-
+    # Path(cache_dir).mkdir(exist_ok=True)
 
     # Forward all provided command-line arguments to mypy
     mypy_args = sys.argv[1:]  # Get all command-line arguments after `fastermypy`
@@ -98,7 +109,7 @@ def run_mypy():
         args.append(f"--config-file={config_file}")
     args.extend(mypy_args)
 
-    print(f"Running Mypy")
+    print("Running Mypy")
     start = time.time()
 
     # Run mypy via its API
@@ -110,11 +121,12 @@ def run_mypy():
         print(stdout)
     if stderr:
         print(stderr, file=sys.stderr)
-    
+
     if pre_command:
         print(f"Pre-command took {pre_command_duration:3g} seconds")
     print(f"Mypy took {end-start:3g} seconds")
     sys.exit(exit_status)
+
 
 if __name__ == "__main__":
     run_mypy()

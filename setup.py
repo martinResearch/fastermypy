@@ -9,10 +9,7 @@ setup(
             "fastermypy=fastermypy.main:run_mypy",
         ],
     },
-    install_requires=[
-        "mypy",
-        "toml"
-    ],
+    install_requires=["mypy", "toml"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
