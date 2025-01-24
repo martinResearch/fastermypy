@@ -3,6 +3,8 @@ import subprocess
 import toml
 from pathlib import Path
 import sys
+from mypy import api
+import time
 
 def load_config():
     """Load fastermypy settings from pyproject.toml."""
@@ -70,34 +72,49 @@ def run_mypy():
     assert isinstance(cache_dir, str)
     cache_dir = cache_dir.format(branch_name=branch_name, repo_root=repo_root)
     os.makedirs(cache_dir, exist_ok=True)
+    print(f"Using cache directory: {cache_dir}")
 
     pre_command = config.get("pre_command")
     if pre_command:
+        start = time.time()
         print(f"Running pre-command: {pre_command}")
         # runn command and stop if failed
         out= subprocess.check_call(pre_command, shell=True)
         if out != 0:
             raise Exception("Pre-command failed")  
+        pre_command_duration = time.time() - start
     config_file = find_mypy_config()
-    config_option = f"--config-file={config_file}" if config_file else ""
 
     #Path(cache_dir).mkdir(exist_ok=True)
 
-    command = ["mypy", f"--cache-dir={cache_dir}"]
-    if config_option:
-        command.append(config_option)
 
     # Forward all provided command-line arguments to mypy
     mypy_args = sys.argv[1:]  # Get all command-line arguments after `fastermypy`
 
-    command.extend(mypy_args)
-
-
-    print(f"Running mypy with cache: {cache_dir}")
+    # Build Mypy arguments list
+    args = [f"--cache-dir={cache_dir}"]
     if config_file:
-        print(f"Using config: {config_file}")
+        print(f"Using mypy configuration file: {config_file}")
+        args.append(f"--config-file={config_file}")
+    args.extend(mypy_args)
 
-    subprocess.run(command, check=True)
+    print(f"Running mypy")
+    start = time.time()
+
+    # Run mypy via its API
+    stdout, stderr, exit_status = api.run(args)
+
+    end = time.time()
+
+    if stdout:
+        print(stdout)
+    if stderr:
+        print(stderr, file=sys.stderr)
+    
+    if pre_command:
+        print(f"Pre-command took {pre_command_duration} seconds")
+    print(f"mypy took {end-start} seconds")
+    sys.exit(exit_status)
 
 if __name__ == "__main__":
     run_mypy()
