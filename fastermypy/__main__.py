@@ -83,16 +83,16 @@ def run_mypy() -> None:
     print(f"Using cache directory: {cache_dir}")
 
     if config:
-        pre_command = config.get("pre_command")
-        if pre_command:
+        pre_commands = config.get("pre_commands")
+        if pre_commands:
             start = time.time()
-            print(f"Running pre-command: {pre_command}")
-            # runn command and stop if failed
-            out = subprocess.check_call(pre_command, shell=True)
-            if out != 0:
-                raise Exception("Pre-command failed")
-            pre_command_duration = time.time() - start
-            print(f"Pre-command took {pre_command_duration:3g} seconds")
+            for pre_command in pre_commands:
+                print(f"Running pre-commands: {pre_command}")   
+                out = subprocess.check_call(pre_command, shell=True)
+                if out != 0:
+                    raise Exception("Pre-command failed")
+                pre_command_duration = time.time() - start
+                print(f"Pre-command took {pre_command_duration:3g} seconds")
 
     mypy_config_file = find_mypy_config(repo_root)
 
