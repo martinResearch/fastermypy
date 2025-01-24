@@ -2,7 +2,7 @@
 
 FasterMypy is a custom wrapper for mypy that provides:
 
-- **Branch-Specific Caching:** Speeds up type checking by maintaining separate caches for each Git branch.
+- **Branch-Specific Caching:** Speeds up type checking after switching branches by maintaining separate caches for each Git branch.
 - **Pre-Execution Command Support:** Ensures dependencies are up-to-date before type checking.
 
 ## Installation
