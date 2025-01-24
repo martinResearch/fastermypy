@@ -10,11 +10,9 @@ def load_config():
     """Load fastermypy settings from pyproject.toml."""
     current_dir = Path.cwd()
     while current_dir != current_dir.parent:
-        config_file = current_dir / "pyproject.toml"
-        print(config_file)
+        config_file = current_dir / "pyproject.toml"        
         if config_file.exists():
-            config_data = toml.load(config_file)
-            return config_data.get("tool", {}).get("fastermypy", {})
+            return config_file
         current_dir = current_dir.parent
         if (current_dir/".git").exists():
             break
@@ -64,8 +62,10 @@ def get_repo_root():
         return Path.cwd().root
 def run_mypy():
     """Run mypy with branch-specific caching and optional pre-command."""
-    config = load_config()
-    
+    config_file = load_config()
+    print(f"Using fastmypy configurations from {config_file}")
+    config_data = toml.load(config_file)
+    config = config_data.get("tool", {}).get("fastermypy", {})
     branch_name = get_git_branch()
     repo_root = get_repo_root()
     cache_dir = config.get("cache_dir", "{repo_root}/.mypy_cache/branch/{branch_name}")
