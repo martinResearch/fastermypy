@@ -1,11 +1,13 @@
+"""FasterMypy: Speed up mypy by caching type-checking results per Git branch."""
 import os
-import subprocess
-import toml
 from pathlib import Path
+import subprocess
 import sys
-from mypy import api
 import time
 from typing import Optional
+
+from mypy import api
+import toml
 
 
 def find_config(repo_root) -> Optional[Path]:
@@ -23,7 +25,6 @@ def find_config(repo_root) -> Optional[Path]:
 
 def find_mypy_config(repo_root) -> Optional[Path]:
     """Search for a mypy.ini file up to the Git root directory."""
-
     current_dir = Path.cwd()
     while current_dir != repo_root and current_dir != current_dir.parent:
         config_path = current_dir / "mypy.ini"
@@ -53,7 +54,6 @@ def get_git_branch() -> str:
 
 def get_repo_root() -> Path:
     """Get the root directory of the Git repository."""
-
     result = subprocess.run(
         ["git", "rev-parse", "--show-toplevel"],
         text=True,
@@ -80,7 +80,6 @@ def run_mypy() -> None:
     os.makedirs(cache_dir, exist_ok=True)
     print(f"Using cache directory: {cache_dir}")
 
-
     if config:
         pre_command = config.get("pre_command")
         if pre_command:
@@ -106,17 +105,17 @@ def run_mypy() -> None:
         print(f"Using mypy configuration file: {mypy_config_file}")
         args.append(f"--config-file={mypy_config_file}")
 
-    args.append("--sqlite-cache") # defaulting this to true as it makes Mypy faster
+    args.append("--sqlite-cache")  # defaulting this to true as it makes Mypy faster
     args.extend(mypy_args)
 
-    print("Running Mypy with arguments:\n"," ".join(args))
+    print("Running Mypy with arguments:\n", " ".join(args))
     start = time.time()
 
     # Run mypy via its API
     stdout, stderr, exit_status = api.run(args)
 
     end = time.time()
-    stdout= stdout.strip()
+    stdout = stdout.strip()
     if stdout:
         print(stdout)
     if stderr:
