@@ -1,1 +1,1 @@
-"""fastermypy: Run mypy faster by using different cache folder for each branch."""
+"""FasterMypy: Speed up mypy by caching type-checking results per Git branch."""
