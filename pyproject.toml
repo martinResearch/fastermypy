@@ -10,7 +10,7 @@ authors = [{ name = "Your Name", email = "your.email@example.com" }]
 dependencies = ["mypy", "toml"]
 
 [project.scripts]
-fastermypy = "fastermypy.main:run_mypy"
+fastermypy = "fastermypy.__main__:run_mypy"
 
 [tool.fastermypy]
 cache_dir = ".mypy_cache_{branch}"  # Cache directory pattern with branch
