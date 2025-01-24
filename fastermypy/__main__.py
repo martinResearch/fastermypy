@@ -78,7 +78,6 @@ def run_mypy() -> None:
     cache_dir = config.get("cache_dir", "{repo_root}/.mypy_cache/branch/{branch_name}")
     assert isinstance(cache_dir, str)
     variables = {**os.environ, "branch_name": branch_name, "repo_root": repo_root}
-    print(variables)
     cache_dir = cache_dir.format(**variables)
     os.makedirs(cache_dir, exist_ok=True)
     print(f"Using cache directory: {cache_dir}")
