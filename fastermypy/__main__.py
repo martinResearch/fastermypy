@@ -103,7 +103,7 @@ def run_mypy() -> None:
 
     # Build Mypy arguments list
     args = [f"--cache-dir={cache_dir}"]
-    if config_file:
+    if mypy_ini_file:
         print(f"Using mypy configuration file: {mypy_ini_file}")
         args.append(f"--config-file={mypy_ini_file}")
 
