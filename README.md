@@ -17,6 +17,7 @@ Replace `yourusername` with your actual GitHub username.
 
 ## Configuration
 
+By default fastermypy with use folder  `{repo_root}/.mypy_cache_{branch_name}` for the mypy caching. 
 FasterMypy uses the `pyproject.toml` file for configuration. Add the following section to configure it:
 
 ```toml
