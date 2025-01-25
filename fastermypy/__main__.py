@@ -11,7 +11,7 @@ from mypy import api
 import toml
 
 
-def find_config(repo_root) -> Optional[Path]:
+def find_pyproject_toml(repo_root) -> Optional[Path]:
     """Load fastermypy settings from pyproject.toml."""
     current_dir = Path.cwd()
     while current_dir != current_dir.parent:
@@ -24,7 +24,7 @@ def find_config(repo_root) -> Optional[Path]:
     return None
 
 
-def find_mypy_config(repo_root) -> Optional[Path]:
+def find_mypy_ini(repo_root) -> Optional[Path]:
     """Search for a mypy.ini file up to the Git root directory."""
     current_dir = Path.cwd()
     while current_dir != repo_root and current_dir != current_dir.parent:
@@ -68,8 +68,8 @@ def run_mypy() -> None:
     """Run mypy with branch-specific caching and optional pre-command."""
     branch_name = get_git_branch()
     repo_root = get_repo_root()
-    config_file = find_config(repo_root)
-    if config_file:
+    pyproject_toml_file = find_pyproject_toml(repo_root)
+    if pyproject_toml_file:
         print(f"Using fastmypy configurations from {config_file}")
         config_data = toml.load(config_file)
         config = config_data.get("tool", {}).get("fastermypy", {})
@@ -94,7 +94,7 @@ def run_mypy() -> None:
                 pre_command_duration = time.time() - start
                 print(f"Pre-command took {pre_command_duration:3g} seconds")
 
-    mypy_config_file = find_mypy_config(repo_root)
+    mypy_ini_file = find_mypy_ini(repo_root)
 
     # Path(cache_dir).mkdir(exist_ok=True)
 
@@ -104,8 +104,8 @@ def run_mypy() -> None:
     # Build Mypy arguments list
     args = [f"--cache-dir={cache_dir}"]
     if config_file:
-        print(f"Using mypy configuration file: {mypy_config_file}")
-        args.append(f"--config-file={mypy_config_file}")
+        print(f"Using mypy configuration file: {mypy_ini_file}")
+        args.append(f"--config-file={mypy_ini_file}")
 
     args.append("--sqlite-cache")  # defaulting this to true as it makes Mypy faster
     args.append("--cache-fine-grained")
