@@ -108,6 +108,9 @@ def run_mypy() -> None:
         args.append(f"--config-file={mypy_config_file}")
 
     args.append("--sqlite-cache")  # defaulting this to true as it makes Mypy faster
+    args.append("--cache-fine-grained")
+    args.append("--fast-module-lookup")
+    args.append("--cache-fine-grained") # defaulting this to true as it makes Mypy faster when small changes are made
     args.extend(mypy_args)
 
     print("Running Mypy with arguments:\n", " ".join(args))
