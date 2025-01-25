@@ -70,8 +70,8 @@ def run_mypy() -> None:
     repo_root = get_repo_root()
     pyproject_toml_file = find_pyproject_toml(repo_root)
     if pyproject_toml_file:
-        print(f"Using fastmypy configurations from {config_file}")
-        config_data = toml.load(config_file)
+        print(f"Using fastmypy configurations from {pyproject_toml_file}")
+        config_data = toml.load(pyproject_toml_file)
         config = config_data.get("tool", {}).get("fastermypy", {})
     else:
         config = None
