@@ -6,7 +6,8 @@ FasterMypy is a custom wrapper for mypy that provides:
 - **Pre-Execution Command Support:** Ensures dependencies are up-to-date before type checking.
 - **Search for the mypy.ini file in the parent folders**: You don't have to run mypy from the folder that contains the `mypy.ini` file.
 
-The goal os to provide a temporary solution to https://github.com/python/mypy/issues/18526 until this eventually get supported by mypy
+The goal is to provide a temporary solution to https://github.com/python/mypy/issues/18526 until this eventually get supported by mypy.
+
 
 ## Installation
 
@@ -70,6 +71,11 @@ pre_commands = ["uv pip install -r requirements.txt"]
 
 - Ensure your Python environment is activated before running FasterMypy.
 - The tool will gracefully handle cases where Git is not available or `pyproject.toml` is not found.
+
+## Limitations
+
+- the first run of fastmypy in a new branch will be slow because it cannot reuse the cache from the previous branch
+- the cache folder size can grow very large as one create many branches and one may need to manually delete the cache for old branches to free space. 
 
 ## Contribution
 
