@@ -68,6 +68,11 @@ def run_mypy() -> None:
     """Run mypy with branch-specific caching and optional pre-command."""
     branch_name = get_git_branch()
     repo_root = get_repo_root()
+    
+    # get the python executable path
+    python_path = Path(sys.executable).as_posix()
+    python_path_md5 = hashlib.md5(python_path.encode()).hexdigest()
+
     pyproject_toml_file = find_pyproject_toml(repo_root)
     if pyproject_toml_file:
         print(f"Using fastmypy configurations from {pyproject_toml_file}")
@@ -75,9 +80,9 @@ def run_mypy() -> None:
         config = config_data.get("tool", {}).get("fastermypy", {})
     else:
         config = None
-    cache_dir = config.get("cache_dir", "{repo_root}/.mypy_cache/branch/{branch_name}")
+    cache_dir = config.get("cache_dir", "{repo_root}/.mypy_cache/python_{python_path_md5}/branch/{branch_name}")
     assert isinstance(cache_dir, str)
-    variables = {**os.environ, "branch_name": branch_name, "repo_root": repo_root}
+    variables = {**os.environ, "branch_name": branch_name, "repo_root": repo_root, "python_path_md5": python_path_md5}
     cache_dir = cache_dir.format(**variables)
     os.makedirs(cache_dir, exist_ok=True)
     print(f"Using cache directory: {cache_dir}")
