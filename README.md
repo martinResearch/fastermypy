@@ -23,12 +23,12 @@ FasterMypy uses the `pyproject.toml` file for configuration. Add the following s
 ```toml
 [tool.fastermypy]
 # Customize cache directory per branch
-cache_dir = "{repo_root}/.mypy_cache_{branch_name}" 
+cache_dir = "{repo_root}/.mypy_cache/python_{python_path_md5}/branch/{branch_name}"
 # Commands to run before mypy
 pre_commands = ["uv pip install -r requirements.txt"]  
 ```
 
-- One can use variables while defining `cache_dir`. The availabel variables are `branch_name`, `repo_root` and all the environement variables. This allow a better control of the caching folder throught the `pyproject.toml` file.
+- One can use variables while defining `cache_dir`. The availabel variables are `branch_name`, `repo_root`, `python_path_md5` and all the environment variables. This allow a better control of the caching folder throught the `pyproject.toml` file.
 - `pre_commands` allows you to specify any shell command (e.g., dependency synchronization).
 
 ## Usage
@@ -46,7 +46,7 @@ fastermypy
 ```toml
 [tool.fastermypy]
 # Customize cache directory per branch
-cache_dir = "{repo_root}/.mypy_cache_{branch_name}" 
+cache_dir =  "{repo_root}/.mypy_cache/python_{python_path_md5}/branch/{branch_name}" 
 # Commands to run before mypy
 pre_commands = ["uv pip install -r requirements.txt"]  
 ```
